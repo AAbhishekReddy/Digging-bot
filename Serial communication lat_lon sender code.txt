@@ -1,0 +1,41 @@
+double lat = 12.097863;
+double lon = 80.038274;
+char str1[10], str2[10];
+
+String s;
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  Serial3.begin(9600);
+  
+  for(int k=0; k<10; k++)
+  {
+    str1[k]='0';
+  }
+  for(int k=0; k<10; k++)
+  {
+    str2[k]='0';
+  }
+  dtostrf(lat, 10, 6, str1);
+  dtostrf(lon, 10, 6, str2);
+}
+void loop() {
+  // put your main code here, to run repeatedly:
+  Serial.print(lat, 6);
+  Serial.print("\t");
+  Serial.print(lon, 6);
+  Serial.print("\t");
+  for(int i=0; i<10; i++)
+  {
+    Serial.print(str1[i]);
+    Serial3.write(str1[i]);
+  }
+  Serial.print("\t");
+  for(int j=0; j<10; j++)
+  {
+    Serial.print(str2[j]);
+    Serial3.write(str2[j]);
+  }
+  Serial3.write('\0');
+  Serial.print("\n");
+}
