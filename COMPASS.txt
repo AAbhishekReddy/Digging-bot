@@ -82,8 +82,22 @@ float compass(unsigned char buf[], int fd){
 int main(){
     int compass_fd = compass_setup();
     unsigned char buff[16];
-    while(1)
-      float angle = compass(buff,compass_fd);
+    //while(1)
+    float angle = compass(buff,compass_fd);
+    for(i=0; i<8; i+=2)
+    {
+      //destination=latlonc[i], latlonc[i+1];
+      lat=Serial();
+      lon=Serial();
+      while(!(latlonc[i]==lat && latlongc[i+1]==lon))
+      {
+        lat=Serial();
+        lon=Serial();
+        b=bear(latlonc[i], latlonc[i+1], lat, lon);
+        if(b!=angle)
+          rotate(b, angle);
+      }
+    }
 
     /*********************************************************
      *  receive current lat, long from arduino               *
@@ -92,12 +106,48 @@ int main(){
      *********************************************************/
  
 //Bearing calculation:
- 
- double y = sin(lo2-lo1) * cos(la2);
- double x = (cos(la1)*sin(la2)) - (cos(la1)*sin(la2)*cos(lo2-lo1));
- double bearing = atan2(y, x);
- bearing *= (180/3.141);
- cout<<bearing;
-
-    return 0;
+int bear(double dla, double dli, double lati, double longi)
+{
+ int i=0;
+   la1=lati;
+   lo1=longi;
+   la2=dla;
+   lo2=dlo;
+   double y = sin(lo2-lo1) * cos(la2);
+   double x = (cos(la1)*sin(la2)) - (cos(la1)*sin(la2)*cos(lo2-lo1));
+   double bearing = atan2(y, x);
+   bearing *= (180/3.141);
+   if(bearing<0)
+     b=360-bearing;
+   else
+     b=bearing;
+   h=angle;
+   float angle = compass(buff,compass_fd);
+   return bear;
+}
+void rotate(int b, int h)
+{
+   float angle = compass(buff,compass_fd);
+   while(angle!=h)
+   {
+     float angle = compass(buff,compass_fd);
+     h=angle;
+     int n=h-b;
+     if(n>0)
+     {
+       m=360-n;
+       if(m>n)
+         cout<<"a";
+       else
+         cout<<"d";
+     }
+     else
+     {
+       m=360+n;
+       if(-n>m)
+         cout<<"a";
+       else
+         cout<<"d";
+     }
+   };
 }
